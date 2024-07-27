@@ -448,9 +448,10 @@ class AxisInputSmoother:
                 shaper_defs.DEFAULT_DAMPING_RATIO,
                 normalize_coeffs=False,
             )
+            smoother_offset = self.t_offs + 0.5 * (self.smooth_time - t_sm)
             success = (
                 ffi_lib.extruder_set_smoothing_params(
-                    sk, axis, len(C_e), C_e, t_sm, self.t_offs
+                    sk, axis, len(C_e), C_e, t_sm, smoother_offset
                 )
                 == 0
             )
