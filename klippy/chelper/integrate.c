@@ -50,7 +50,8 @@ diff_antiderivatives(const smoother_antiderivatives* ad1
 
 inline double
 integrate_move(const struct move* m, int axis, double base, double t0
-               , const smoother_antiderivatives* s)
+               , const smoother_antiderivatives* s
+               , double* smooth_velocity)
 {
     double axis_r = m->axes_r.axis[axis - 'x'];
     double start_v = m->start_v * axis_r;
@@ -59,18 +60,10 @@ integrate_move(const struct move* m, int axis, double base, double t0
     double accel = 2. * half_accel;
     base += (half_accel * t0 + start_v) * t0;
     start_v += accel * t0;
-    return base * s->it0 - start_v * s->it1 + half_accel * s->it2;
-}
-
-inline double
-integrate_velocity(const struct move* m, int axis, double t0
-                   , const smoother_antiderivatives* s)
-{
-    double axis_r = m->axes_r.axis[axis - 'x'];
-    double start_v = m->start_v * axis_r;
-    double accel = 2. * m->half_accel * axis_r;
-    start_v += accel * t0;
-    return start_v * s->it0 - accel * s->it1;
+    double smooth_pos = base * s->it0 - start_v * s->it1 + half_accel * s->it2;
+    if (smooth_velocity)
+        *smooth_velocity = start_v * s->it0 - accel * s->it1;
+    return smooth_pos;
 }
 
 /****************************************************************
